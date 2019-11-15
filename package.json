@@ -1,0 +1,24 @@
+{
+  "name": "chatter-server",
+  "version": "1.0.0",
+  "description": "chat app server",
+  "main": "server.js",
+  "dependencies": {
+    "socket.io": "^2.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cory0s/chatter-server.git"
+  },
+  "author": "Cory Henderson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cory0s/chatter-server/issues"
+  },
+  "homepage": "https://github.com/cory0s/chatter-server#readme"
+}
