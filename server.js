@@ -14,6 +14,10 @@ server.listen(8000, () => {
 io.on('connection', (client) => {
     console.log('Socket connected!', client.id);
 
+    client.on('join', ({ name,room }) => {
+        console.log(name,room);
+    });
+    
     client.on('disconnect', () => {
         console.log('Someone left...', client.id);
     })
