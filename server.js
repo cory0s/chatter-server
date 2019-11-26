@@ -4,25 +4,42 @@ const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
 const router = require('./router');
+const { addUser, removeUser, getUser, getUsersInRoom } = require('./users.js');
+const PORT = process.env.PORT || '8000';
 
+//Use Express router and start server
 app.use(router);
 
-server.listen(8000, () => {
-    console.log('Server up on port 8000');
-});
+//Manage socket.io connections
+io.on('connection', (socket) => {
 
-io.on('connection', (client) => {
-    console.log('Socket connected!', client.id);
+    socket.on('join', ({ name,room }, callback) => {
+        const { error, user } = addUser({ id: socket.id, name, room });
 
-    client.on('join', ({ name,room }) => {
-        console.log(name,room);
+        if(error) return callback(error);
+
+        socket.emit('message', { user: 'admin', text: `${user.name}, welcome to ${user.room}`});
+        socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name} has joined the room.`})
+        
+        socket.join(user.room);
+
+        // callback(); //Callback at front-end (if statement?)
     });
     
-    client.on('disconnect', () => {
-        console.log('Someone left...', client.id);
+    socket.on('sendMessage', (message, callback) => {
+        const user = getUser(socket.id);
+
+        io.to(user.room).emit('message', { user: user.name, text: message });
+
+        callback(); //Do something after message is sent on FE
+    })
+
+    socket.on('disconnect', () => {
+        console.log('Someone left...', socket.id);
     })
 });
 
-io.on('disconnect', client => {
-    console.log('Socket disconnected');
+//Start server
+server.listen(PORT, () => {
+    console.log(`Server up on port ${PORT}`);
 });
