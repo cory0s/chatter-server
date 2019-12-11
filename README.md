@@ -1,4 +1,10 @@
-# chatter-server
+# Chatter Server
+A web API utilizing Socket.io to enable real time messaging services.
 
-## Socket.io Chat Server
-Back end for a full stack application utilizing Node and React. 
+Front end repo here: https://github.com/cory0s/chatter
+
+## Features
+- Node.js
+- Socket.io
+- Express.js
+- MongoDB
