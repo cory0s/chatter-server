@@ -4,7 +4,8 @@ const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
 const router = require('./router');
-const { addUser, removeUser, getUser, getUsersInRoom } = require('./users.js');
+const { addUser, removeUser, getUser, getUsersInRoom, getRooms, removeRoom } = require('./users.js');
+const { addRoom } = require('./rooms.js');
 const PORT = process.env.PORT || '8000';
 
 //Use Express router and start server
@@ -15,6 +16,7 @@ io.on('connection', (socket) => {
 
     socket.on('join', ({ name,room }, callback) => {
         const { error, user } = addUser({ id: socket.id, name, room });
+        const existingRooms = addRoom(room);
 
         if(error) return callback(error);
 
@@ -23,7 +25,7 @@ io.on('connection', (socket) => {
         
         socket.join(user.room);
 
-        io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
+        io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room), rooms: existingRooms });
 
         callback(); //Callback at front-end (if statement?)
     });
@@ -40,8 +42,10 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('Someone left...', socket.id);
 
+        removeRoom(socket.id);
         const user = removeUser(socket.id);
-        io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
+
+        io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room), rooms: getRooms() });
 
         if(user){
             io.to(user.room).emit('message', { user: 'admin', text: `${user.name} has left.`});
