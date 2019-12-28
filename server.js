@@ -4,8 +4,8 @@ const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
 const router = require('./router');
-const { addUser, removeUser, getUser, getUsersInRoom, getRooms, removeRoom } = require('./users.js');
-const { addRoom } = require('./rooms.js');
+const { addUser, removeUser, getUser, getUsersInRoom } = require('./users.js');
+const { addRoom, removeRoom, getRooms } = require('./rooms.js');
 const PORT = process.env.PORT || '8000';
 
 //Use Express router and start server
@@ -34,7 +34,7 @@ io.on('connection', (socket) => {
         const user = getUser(socket.id);
 
         io.to(user.room).emit('message', { user: user.name, text: message });
-        io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
+        io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room), rooms: getRooms() });
 
         callback(); //Do something after message is sent on FE
     })
@@ -42,10 +42,14 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('Someone left...', socket.id);
 
-        removeRoom(socket.id);
         const user = removeUser(socket.id);
+        let rooms = getRooms();
 
-        io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room), rooms: getRooms() });
+        if(getUsersInRoom(user.room).length > 0){
+            rooms = removeRoom(user.room);
+        }
+
+        io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room), rooms });
 
         if(user){
             io.to(user.room).emit('message', { user: 'admin', text: `${user.name} has left.`});

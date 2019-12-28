@@ -9,8 +9,14 @@ const addRoom = (room) => {
     return rooms;
 }
 
-const removeRoom = (room) => {
+const getRooms = () => {
 
+    return rooms;
 }
 
-module.exports = { addRoom, removeRoom };
+const removeRoom = (room) => {
+    
+    return rooms.filter((existingRoom) => existingRoom != room);
+}
+
+module.exports = { addRoom, getRooms, removeRoom };
