@@ -35,33 +35,4 @@ const getUsersInRoom = (room) => {
     return users.filter((user) => user.room === room);
 }
 
-const getRooms = () => {
-
-    return rooms;
-}
-
-const removeRoom = (id) => {
-    let room;
-    let count = 0;
-
-    users.forEach(user => {
-        if(user.id === id){
-            room = user.room;
-        }
-    });
-
-    users.forEach(user => {
-        if(user.room === room){
-            count++;
-        }
-    });
-    // console.log('before splice', rooms);
-    // console.log('current room', room);
-    if(count < 1){
-        rooms.splice(rooms.indexOf(room), 1);
-    }
-    // console.log('removeRoom', rooms, count);
-    return rooms;
-}
-
-module.exports = { addUser, removeUser, getUser, getUsersInRoom, getRooms, removeRoom };
+module.exports = { addUser, removeUser, getUser, getUsersInRoom };
