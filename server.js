@@ -25,8 +25,9 @@ io.on('connection', (socket) => {
         
         socket.join(user.room);
 
-        io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room), rooms: existingRooms });
-
+        io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
+        io.emit('allRoomData', { rooms: existingRooms });
+        
         callback(); //Callback at front-end (if statement?)
     });
     
