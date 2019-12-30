@@ -27,7 +27,7 @@ io.on('connection', (socket) => {
 
         io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
         io.emit('allRoomData', { rooms: existingRooms });
-        
+
         callback(); //Callback at front-end (if statement?)
     });
     
@@ -38,7 +38,7 @@ io.on('connection', (socket) => {
         io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room), rooms: getRooms() });
 
         callback(); //Do something after message is sent on FE
-    })
+    });
 
     socket.on('disconnect', () => {
         console.log('Someone left...', socket.id);
@@ -46,16 +46,21 @@ io.on('connection', (socket) => {
         const user = removeUser(socket.id);
         let rooms = getRooms();
 
-        if(getUsersInRoom(user.room).length > 0){
+        if(getUsersInRoom(user.room).length === 0){
             rooms = removeRoom(user.room);
         }
 
         io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room), rooms });
 
+        if(rooms.length > 0){
+            console.log('allrooms', rooms);
+            io.emit('allRoomData', { rooms });
+        }
+        
         if(user){
             io.to(user.room).emit('message', { user: 'admin', text: `${user.name} has left.`});
         }
-    })
+    });
 });
 
 //Start server
