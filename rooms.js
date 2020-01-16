@@ -10,7 +10,9 @@ const addRoom = (room) => {
 }
 
 const getRooms = () => {
-
+    if(rooms.length < 1){
+        return ['No Rooms Available'];
+    }
     return rooms;
 }
 
