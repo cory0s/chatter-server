@@ -40,8 +40,10 @@ io.on('connection', (socket) => {
     // Manage user message events
     socket.on('sendMessage', (message, callback) => {
         const user = getUser(socket.id);
+        const date = new Date();
+        const time = date.getHours() + ':' + date.getMinutes();
 
-        io.to(user.room).emit('message', { user: user.name, text: message });
+        io.to(user.room).emit('message', { user: user.name, text: message, date: time });
         io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room), rooms: getRooms() });
 
         callback(); //Do something after message is sent on FE
